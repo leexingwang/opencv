@@ -36,9 +36,27 @@ public class MainActivity extends AppCompatActivity {
         arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(arr_adapter);
         spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 commend = data_list.get(arg2);
+                if (ImageProcessUtils.ImageProcessType_morphLineFindImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.findline, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_openImage.equals(commend) || ImageProcessUtils.ImageProcessType_closeImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.text, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.neina, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                }
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -53,11 +71,26 @@ public class MainActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(commend)) {
                     return;
                 } else {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.aaa, options);
-                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
-                    imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1));
+                    if (ImageProcessUtils.ImageProcessType_morphLineFindImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.findline, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_openImage.equals(commend) || ImageProcessUtils.ImageProcessType_closeImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.text, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.neina, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    }
+
                 }
             }
         });
