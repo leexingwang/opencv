@@ -623,7 +623,6 @@ public class ImageProcessUtils {
         Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
         //二值化
         Imgproc.threshold(src, dst, 0, 255, getTypess(commend));
-
         Utils.matToBitmap(dst, bitmap);
         src.release();
         dst.release();
@@ -633,6 +632,32 @@ public class ImageProcessUtils {
         return bitmap;
 
     }
+
+
+    /**
+     * 二值化处理图片
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap thresholdImageSeekBar(int seek, int commend, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //二值化
+        Imgproc.threshold(src, dst, seek, 255, getTypes(commend));
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
 
     private static int getTypess(int commend) {
         int kernel = Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU;
@@ -656,6 +681,33 @@ public class ImageProcessUtils {
             //截断
             case 5:
                 kernel = Imgproc.THRESH_TRUNC | Imgproc.THRESH_OTSU;
+                break;
+        }
+        return kernel;
+    }
+
+    private static int getTypes(int commend) {
+        int kernel = Imgproc.THRESH_BINARY ;
+        switch (commend) {
+            //阈值二值化(threshold binary)
+            case 1:
+                kernel = Imgproc.THRESH_BINARY ;
+                break;
+            //阈值反二值化
+            case 2:
+                kernel = Imgproc.THRESH_BINARY_INV ;
+                break;
+            //阈值取零
+            case 3:
+                kernel = Imgproc.THRESH_TOZERO ;
+                break;
+            //阈值反取零
+            case 4:
+                kernel = Imgproc.THRESH_TOZERO_INV ;
+                break;
+            //截断
+            case 5:
+                kernel = Imgproc.THRESH_TRUNC ;
                 break;
         }
         return kernel;
