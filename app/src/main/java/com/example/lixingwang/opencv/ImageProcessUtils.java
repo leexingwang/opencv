@@ -46,11 +46,11 @@ public class ImageProcessUtils {
     public static final String ImageProcessType_openImage = "开操作处理图片";
     public static final String ImageProcessType_closeImage = "闭操作处理图片";
     public static final String ImageProcessType_morphLineFindImage = "开操作直线检测";
-    public static final String ImageProcessType_THRESH_BINARY = "阈值二值化处理图片";
-    public static final String ImageProcessType_THRESH_BINARY_INV = "阈值反二值化处理图片";
-    public static final String ImageProcessType_THRESH_TOZERO = "阈值取零二值化处理图片";
-    public static final String ImageProcessType_THRESH_TOZERO_INV = "阈值反取零二值化处理图片";
-    public static final String ImageProcessType_THRESH_TRUNC = "截断二值化处理图片";
+    public static final String ImageProcessType_THRESH_BINARY = "阈值二值化处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_THRESH_BINARY_INV = "阈值反二值化处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_THRESH_TOZERO = "阈值取零二值化处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_THRESH_TOZERO_INV = "阈值反取零二值化处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_THRESH_TRUNC = "截断二值化处理图片(可以拖动SeekBar)";
 
 
     public static List<String> getCommendList() {

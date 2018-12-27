@@ -58,21 +58,21 @@ public class MainActivity extends AppCompatActivity {
                         ImageProcessUtils.ImageProcessType_THRESH_TOZERO.equals(commend) ||
                         ImageProcessUtils.ImageProcessType_THRESH_TOZERO_INV.equals(commend) ||
                         ImageProcessUtils.ImageProcessType_THRESH_TRUNC.equals(commend)) {
-                    int commend = 1;
+                    int commendInt = 1;
                     if (ImageProcessUtils.ImageProcessType_THRESH_BINARY.equals(commend)) {
-                        commend = 1;
+                        commendInt = 1;
                     } else if (ImageProcessUtils.ImageProcessType_THRESH_BINARY_INV.equals(commend)) {
-                        commend = 2;
+                        commendInt = 2;
                     } else if (ImageProcessUtils.ImageProcessType_THRESH_TOZERO.equals(commend)) {
-                        commend = 3;
+                        commendInt = 3;
                     } else if (ImageProcessUtils.ImageProcessType_THRESH_TOZERO_INV.equals(commend)) {
-                        commend = 4;
+                        commendInt = 4;
                     } else if (ImageProcessUtils.ImageProcessType_THRESH_TRUNC.equals(commend)) {
-                        commend = 5;
+                        commendInt = 5;
                     }
                     textView.setText("当前值为：" + progress);
                     bitmap1 = bitmap.copy(options.inPreferredConfig, true);
-                    imageView.setImageBitmap(ImageProcessUtils.thresholdImageSeekBar(progress, commend, bitmap1));
+                    imageView.setImageBitmap(ImageProcessUtils.thresholdImageSeekBar(progress, commendInt, bitmap1));
                 }
             }
 
@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                     imageView.setImageBitmap(bitmap1);
                 }
 
-                seekBar.setProgress(0);
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
