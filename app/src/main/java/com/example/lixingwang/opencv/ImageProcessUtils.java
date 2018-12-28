@@ -51,6 +51,15 @@ public class ImageProcessUtils {
     public static final String ImageProcessType_THRESH_TOZERO = "阈值取零二值化处理图片(可以拖动SeekBar)";
     public static final String ImageProcessType_THRESH_TOZERO_INV = "阈值反取零二值化处理图片(可以拖动SeekBar)";
     public static final String ImageProcessType_THRESH_TRUNC = "截断二值化处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_adaptiveGAUSSIANThresholdImage = "自适应高斯阈值处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_adaptiveMEAN_CThresholdImage = "自适应均值-c阈值处理图片(可以拖动SeekBar)";
+    public static final String ImageProcessType_equalizeHistImage = "直方图均值化处理图片";
+    public static final String ImageProcessType_sobelImage_x = "Sobel算子X处理图片";
+    public static final String ImageProcessType_sobelImage_y = "Sobel算子Y处理图片";
+    public static final String ImageProcessType_sobelImage_xy = "Sobel算子XY处理图片";
+    public static final String ImageProcessType_cannyImage = "图片轮廓检测(可以拖动SeekBar)";
+    public static final String ImageProcessType_houghLinesImage = "图片霍夫直线检测(可以拖动SeekBar)";
+    public static final String ImageProcessType_houghCirclesImage = "图片霍夫圆检测(可以拖动SeekBar)";
 
 
     public static List<String> getCommendList() {
@@ -79,6 +88,15 @@ public class ImageProcessUtils {
         commendList.add(ImageProcessType_THRESH_TOZERO);
         commendList.add(ImageProcessType_THRESH_TOZERO_INV);
         commendList.add(ImageProcessType_THRESH_TRUNC);
+        commendList.add(ImageProcessType_adaptiveGAUSSIANThresholdImage);
+        commendList.add(ImageProcessType_adaptiveMEAN_CThresholdImage);
+        commendList.add(ImageProcessType_equalizeHistImage);
+        commendList.add(ImageProcessType_sobelImage_x);
+        commendList.add(ImageProcessType_sobelImage_y);
+        commendList.add(ImageProcessType_sobelImage_xy);
+        commendList.add(ImageProcessType_cannyImage);
+        commendList.add(ImageProcessType_houghLinesImage);
+        commendList.add(ImageProcessType_houghCirclesImage);
 //        Log.i(TAG, ImageProcessUtils.class.getDeclaredMethods()[3].getDeclaredAnnotations().toString() + "");
         return commendList;
     }
@@ -134,6 +152,24 @@ public class ImageProcessUtils {
             return thresholdImage(4, bitmap);
         } else if (ImageProcessType_THRESH_TRUNC.equals(commend)) {
             return thresholdImage(5, bitmap);
+        } else if (ImageProcessType_adaptiveGAUSSIANThresholdImage.equals(commend)) {
+            return adaptiveGAUSSIANThresholdImage(5, bitmap, false);
+        } else if (ImageProcessType_adaptiveMEAN_CThresholdImage.equals(commend)) {
+            return adaptiveMEAN_CThresholdImage(5, bitmap, false);
+        } else if (ImageProcessType_equalizeHistImage.equals(commend)) {
+            return equalizeHistImage(bitmap);
+        } else if (ImageProcessType_sobelImage_x.equals(commend)) {
+            return sobelImage(bitmap, 1);
+        } else if (ImageProcessType_sobelImage_y.equals(commend)) {
+            return sobelImage(bitmap, 2);
+        } else if (ImageProcessType_sobelImage_xy.equals(commend)) {
+            return sobelImage(bitmap, 3);
+        } else if (ImageProcessType_cannyImage.equals(commend)) {
+            return cannyImage(25, bitmap);
+        } else if (ImageProcessType_houghLinesImage.equals(commend)) {
+            return houghLinesImage(69, bitmap);
+        } else if (ImageProcessType_houghCirclesImage.equals(commend)) {
+            return houghCirclesImage(69, bitmap);
         } else {
             return bitmap;
         }
@@ -687,30 +723,299 @@ public class ImageProcessUtils {
     }
 
     private static int getTypes(int commend) {
-        int kernel = Imgproc.THRESH_BINARY ;
+        int kernel = Imgproc.THRESH_BINARY;
         switch (commend) {
             //阈值二值化(threshold binary)
             case 1:
-                kernel = Imgproc.THRESH_BINARY ;
+                kernel = Imgproc.THRESH_BINARY;
                 break;
             //阈值反二值化
             case 2:
-                kernel = Imgproc.THRESH_BINARY_INV ;
+                kernel = Imgproc.THRESH_BINARY_INV;
                 break;
             //阈值取零
             case 3:
-                kernel = Imgproc.THRESH_TOZERO ;
+                kernel = Imgproc.THRESH_TOZERO;
                 break;
             //阈值反取零
             case 4:
-                kernel = Imgproc.THRESH_TOZERO_INV ;
+                kernel = Imgproc.THRESH_TOZERO_INV;
                 break;
             //截断
             case 5:
-                kernel = Imgproc.THRESH_TRUNC ;
+                kernel = Imgproc.THRESH_TRUNC;
                 break;
         }
         return kernel;
     }
 
+
+    public static Bitmap adaptiveThresholdImage(int seek, int commend, Bitmap bitmap) {
+        seek = (seek % 2 == 0 ? (seek - 1 < 3 ? 3 : seek - 1) : (seek < 3 ? 3 : seek));
+        if (commend == 1) {
+            return adaptiveGAUSSIANThresholdImage(seek, bitmap, true);
+        } else {
+            return adaptiveMEAN_CThresholdImage(seek, bitmap, true);
+        }
+    }
+
+
+    /**
+     * 自适应高斯阈值处理图片
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap adaptiveGAUSSIANThresholdImage(int seek, Bitmap bitmap, boolean isSeek) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //二值化
+        if (!isSeek) {
+            Imgproc.adaptiveThreshold(src, dst, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 59, 0.0);
+        } else {
+            Imgproc.adaptiveThreshold(src, dst, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, seek, 0.0);
+        }
+
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+
+    }
+
+
+    /**
+     * 自适应均值-c阈值处理图片
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap adaptiveMEAN_CThresholdImage(int seek, Bitmap bitmap, boolean isSeek) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //二值化
+        if (!isSeek) {
+            Imgproc.adaptiveThreshold(src, dst, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 59, 0.0);
+        } else {
+            Imgproc.adaptiveThreshold(src, dst, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, seek, 0.0);
+        }
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+
+    }
+
+
+    /**
+     * 直方图均衡化处理图片
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap equalizeHistImage(Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //直方图均衡化输入图像一定要单通道的
+        Imgproc.equalizeHist(src, dst);
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 索贝阿梯度处理图片
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap sobelImage(Bitmap bitmap, int commend) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        if (commend == 1) {
+            Imgproc.Sobel(src, dst, CvType.CV_16S, 1, 0);
+            Core.convertScaleAbs(dst, dst);
+        } else if (commend == 2) {
+            Imgproc.Sobel(src, dst, CvType.CV_16S, 0, 1);
+            Core.convertScaleAbs(dst, dst);
+        } else {
+            Mat xSobel = new Mat();
+            Mat ySobel = new Mat();
+            Imgproc.Sobel(src, xSobel, CvType.CV_16S, 1, 0);
+            Imgproc.Sobel(src, ySobel, CvType.CV_16S, 0, 1);
+            Core.convertScaleAbs(xSobel, xSobel);
+            Core.convertScaleAbs(ySobel, ySobel);
+            Core.addWeighted(xSobel, 0.5, ySobel, 0.5, 0.0, dst);
+            Core.convertScaleAbs(dst, dst);
+            xSobel.release();
+            ySobel.release();
+        }
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 轮廓检测
+     * <p>
+     * 步骤
+     * <p>
+     * 高斯模糊
+     * 梯度计算
+     * 非最大信号压制
+     * 高低阈值链接
+     * 显示
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap cannyImage(int progress, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(gaussianBlurImage(bitmap), src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //轮廓检测
+        Imgproc.Canny(src, dst, progress, 2 * progress, 3, true);
+        Utils.matToBitmap(dst, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 霍夫直线检测
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap houghLinesImage(int progress, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat lines = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        Imgproc.GaussianBlur(src, src, new Size(3, 3), 0, 0, Imgproc.BORDER_DEFAULT);
+        Mat drawImage = new Mat(src.size(), src.type());
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //轮廓检测
+        Imgproc.Canny(src, dst, progress, 2 * progress, 3, false);
+        //直线检测
+//        Imgproc.HoughLines(dst, lines, 1, Math.PI / 180.0, progress);
+//        double[] linesp = new double[2];
+//        for (int i = 0; i < lines.cols(); i++) {
+//            linesp = lines.get(0, i);
+//            double rho = linesp[0];
+//            double thete = linesp[1];
+//            double a = Math.cos(thete);
+//            double b = Math.sin(thete);
+//            double x0 = a * rho;
+//            double y0 = b * rho;
+//            Point point = new Point(x0 + 1000 * (-b), y0 + 1000 * a);
+//            Point point1 = new Point(x0 - 1000 * (-b), y0 - 1000 * a);
+//            Core.line(drawImage, point, point1, new Scalar(255, 0, 0, 0), 2, 8, 0);
+//        }
+
+        Imgproc.HoughLinesP(dst, lines, 1, Math.PI / 180.0, progress > 0 ? progress : 3, 75, 3);
+        double[] pts = new double[4];
+        for (int i = 0; i < lines.cols(); i++) {
+            pts = lines.get(0, i);
+            Point point = new Point(pts[0], pts[1]);
+            Point point1 = new Point(pts[2], pts[3]);
+            Core.line(drawImage, point, point1, new Scalar(255, 0, 0, 0), 2, 8, 0);
+        }
+        Mat finalMat = new Mat();
+        Mat src1 = new Mat();
+        Utils.bitmapToMat(bitmap, src1);
+        Core.addWeighted(drawImage, 0.6, src1, 0.7, 0.0, finalMat);
+        Utils.matToBitmap(finalMat, bitmap);
+        finalMat.release();
+        src1.release();
+        src.release();
+        lines.release();
+        drawImage.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 霍夫圆检测
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap houghCirclesImage(int progress, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat lines = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        Mat drawImage = new Mat(src.size(), src.type());
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //轮廓检测
+        Imgproc.Canny(src, dst, progress, 2 * progress, 3, false);
+        //圆检测
+        Imgproc.HoughCircles(dst, dst, Imgproc.CV_HOUGH_GRADIENT, 1, 5, 2 * (progress > 0 ? progress : 3), 30, 25, 500);
+        double[] circles = new double[3];
+        for (int i = 0; i < dst.cols(); i++) {
+            Point point = new Point(circles[0], circles[1]);
+            Core.circle(drawImage, point, (int) circles[2], new Scalar(255, 0, 0, 0), 2, 8, 0);
+        }
+        Mat finalMat = new Mat();
+        Mat src1 = new Mat();
+        Utils.bitmapToMat(bitmap, src1);
+        Core.addWeighted(drawImage, 0.6, src1, 0.7, 0.0, finalMat);
+        Utils.matToBitmap(finalMat, bitmap);
+        finalMat.release();
+        src1.release();
+        src.release();
+        lines.release();
+        drawImage.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
 }

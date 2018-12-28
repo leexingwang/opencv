@@ -74,6 +74,37 @@ public class MainActivity extends AppCompatActivity {
                     bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                     imageView.setImageBitmap(ImageProcessUtils.thresholdImageSeekBar(progress, commendInt, bitmap1));
                 }
+
+
+                if (ImageProcessUtils.ImageProcessType_adaptiveGAUSSIANThresholdImage.equals(commend) ||
+                        ImageProcessUtils.ImageProcessType_adaptiveMEAN_CThresholdImage.equals(commend)) {
+                    int commendInt = 1;
+                    if (ImageProcessUtils.ImageProcessType_adaptiveGAUSSIANThresholdImage.equals(commend)) {
+                        commendInt = 1;
+                    } else if (ImageProcessUtils.ImageProcessType_adaptiveMEAN_CThresholdImage.equals(commend)) {
+                        commendInt = 2;
+                    }
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.adaptiveThresholdImage(progress, commendInt, bitmap1));
+                }
+                if (ImageProcessUtils.ImageProcessType_cannyImage.equals(commend)) {
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.cannyImage(progress, bitmap1));
+                }
+                if (ImageProcessUtils.ImageProcessType_houghLinesImage.equals(commend)) {
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.houghLinesImage(progress, bitmap1));
+                }
+
+                if (ImageProcessUtils.ImageProcessType_houghCirclesImage.equals(commend)) {
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.houghCirclesImage(progress, bitmap1));
+                }
+
             }
 
             @Override
@@ -102,6 +133,18 @@ public class MainActivity extends AppCompatActivity {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.text, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_houghLinesImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.hough, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_houghCirclesImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
                     Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                     imageView.setImageBitmap(bitmap1);
                 } else {
@@ -135,6 +178,18 @@ public class MainActivity extends AppCompatActivity {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.text, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_houghLinesImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.hough, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_houghCirclesImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
                         Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                         imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
                     } else {

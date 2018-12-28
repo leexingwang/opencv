@@ -2,6 +2,16 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/aaa.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/findline.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/hough.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/hough.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/hough.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/hough.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/houghc.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/houghlines.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/houghlines.jpg" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/neina.png" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/text.jpg" charset="GBK" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
