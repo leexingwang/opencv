@@ -1,5 +1,6 @@
 package com.example.lixingwang.opencv;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -15,7 +16,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.opencv.android.OpenCVLoader;
+import org.opencv.objdetect.CascadeClassifier;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private Bitmap bitmap1;
     private BitmapFactory.Options options;
+    private CascadeClassifier cascadeClassifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textview);
         button = findViewById(R.id.button2);
         imageView = findViewById(R.id.imageView);
+
         seekBar.setMax(255);
         seekBar.setProgress(0);
         textView.setText("当前值为：0");
@@ -104,6 +112,16 @@ public class MainActivity extends AppCompatActivity {
                     bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                     imageView.setImageBitmap(ImageProcessUtils.houghCirclesImage(progress, bitmap1));
                 }
+                if (ImageProcessUtils.ImageProcessType_findContoursImage.equals(commend)) {
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.findContoursImage(progress, bitmap1));
+                }
+                if (ImageProcessUtils.ImageProcessType_momentsImage.equals(commend)) {
+                    textView.setText("当前值为：" + progress);
+                    bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(ImageProcessUtils.momentsImage(progress, bitmap1));
+                }
 
             }
 
@@ -145,6 +163,33 @@ public class MainActivity extends AppCompatActivity {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_matchTemplateImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.tpsrc, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_findContoursImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_momentsImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.lunkuo, options);
+                    Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                    imageView.setImageBitmap(bitmap1);
+                } else if (ImageProcessUtils.ImageProcessType_findFaceImage.equals(commend)||
+                        ImageProcessUtils.ImageProcessType_smileFaceImage.equals(commend)||
+                        ImageProcessUtils.ImageProcessType_eyeFaceImage.equals(commend)||
+                        ImageProcessUtils.ImageProcessType_mouthFaceImage.equals(commend)) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.face, options);
                     Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                     imageView.setImageBitmap(bitmap1);
                 } else {
@@ -192,6 +237,48 @@ public class MainActivity extends AppCompatActivity {
                         bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
                         Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
                         imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_matchTemplateImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.tpsrc, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_findContoursImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.houghc, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_momentsImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.lunkuo, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.processByType(commend, bitmap1, MainActivity.this));
+                    } else if (ImageProcessUtils.ImageProcessType_findFaceImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.face, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.findFaceImage(bitmap1, getFaceCascadeClassifier(1)));
+                    } else if (ImageProcessUtils.ImageProcessType_smileFaceImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.face, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.findFaceImage(bitmap1, getFaceCascadeClassifier(2)));
+                    } else if (ImageProcessUtils.ImageProcessType_eyeFaceImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.face, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.findFaceImage(bitmap1, getFaceCascadeClassifier(3)));
+                    } else if (ImageProcessUtils.ImageProcessType_mouthFaceImage.equals(commend)) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        bitmap = BitmapFactory.decodeResource(MainActivity.this.getResources(), R.mipmap.face, options);
+                        Bitmap bitmap1 = bitmap.copy(options.inPreferredConfig, true);
+                        imageView.setImageBitmap(ImageProcessUtils.findFaceImage(bitmap1, getFaceCascadeClassifier(4)));
                     } else {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -203,6 +290,44 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+    }
+
+    private CascadeClassifier getFaceCascadeClassifier(int type) {
+        InputStream inputStream = getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+        switch (type) {
+            case 1:
+                inputStream = getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+                break;
+            case 2:
+                inputStream = getResources().openRawResource(R.raw.haarcascade_smile);
+                break;
+            case 3:
+                inputStream = getResources().openRawResource(R.raw.haarcascade_eye);
+                break;
+            case 4:
+                inputStream = getResources().openRawResource(R.raw.haarcascade_mcs_mouth);
+                break;
+            default:
+                inputStream = getResources().openRawResource(R.raw.haarcascade_frontalface_default);
+                break;
+        }
+        try {
+            File cascadeClassifierFile = this.getDir("CascadeClassifier", Context.MODE_PRIVATE);
+            File file = new File(cascadeClassifierFile.getAbsolutePath(), "lbpcascade_frontalface.xml");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            byte[] buff = new byte[1024];
+            int lengh = 0;
+            while ((lengh = inputStream.read(buff)) != -1) {
+                fileOutputStream.write(buff, 0, lengh);
+            }
+            inputStream.close();
+            fileOutputStream.close();
+            cascadeClassifier = new CascadeClassifier(file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cascadeClassifier;
 
     }
 

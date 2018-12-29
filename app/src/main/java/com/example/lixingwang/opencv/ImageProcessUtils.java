@@ -2,17 +2,23 @@ package com.example.lixingwang.opencv;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +63,16 @@ public class ImageProcessUtils {
     public static final String ImageProcessType_sobelImage_x = "Sobel算子X处理图片";
     public static final String ImageProcessType_sobelImage_y = "Sobel算子Y处理图片";
     public static final String ImageProcessType_sobelImage_xy = "Sobel算子XY处理图片";
-    public static final String ImageProcessType_cannyImage = "图片轮廓检测(可以拖动SeekBar)";
+    public static final String ImageProcessType_cannyImage = "图片边缘检测(可以拖动SeekBar)";
     public static final String ImageProcessType_houghLinesImage = "图片霍夫直线检测(可以拖动SeekBar)";
     public static final String ImageProcessType_houghCirclesImage = "图片霍夫圆检测(可以拖动SeekBar)";
+    public static final String ImageProcessType_matchTemplateImage = "模式匹配图像检测";
+    public static final String ImageProcessType_findContoursImage = "图片轮廓检测(可以拖动SeekBar)";
+    public static final String ImageProcessType_momentsImage = "轮廓周长面积计算(可以拖动SeekBar)";
+    public static final String ImageProcessType_findFaceImage = "人脸检测";
+    public static final String ImageProcessType_smileFaceImage = "人脸笑容检测(不准)";
+    public static final String ImageProcessType_eyeFaceImage = "人脸眼睛检测(不准)";
+    public static final String ImageProcessType_mouthFaceImage = "人脸嘴检测(不准)";
 
 
     public static List<String> getCommendList() {
@@ -97,6 +110,13 @@ public class ImageProcessUtils {
         commendList.add(ImageProcessType_cannyImage);
         commendList.add(ImageProcessType_houghLinesImage);
         commendList.add(ImageProcessType_houghCirclesImage);
+        commendList.add(ImageProcessType_matchTemplateImage);
+        commendList.add(ImageProcessType_findContoursImage);
+        commendList.add(ImageProcessType_momentsImage);
+        commendList.add(ImageProcessType_findFaceImage);
+        commendList.add(ImageProcessType_smileFaceImage);
+        commendList.add(ImageProcessType_eyeFaceImage);
+        commendList.add(ImageProcessType_mouthFaceImage);
 //        Log.i(TAG, ImageProcessUtils.class.getDeclaredMethods()[3].getDeclaredAnnotations().toString() + "");
         return commendList;
     }
@@ -169,7 +189,17 @@ public class ImageProcessUtils {
         } else if (ImageProcessType_houghLinesImage.equals(commend)) {
             return houghLinesImage(69, bitmap);
         } else if (ImageProcessType_houghCirclesImage.equals(commend)) {
-            return houghCirclesImage(69, bitmap);
+            return houghCirclesImage(112, bitmap);
+        } else if (ImageProcessType_matchTemplateImage.equals(commend)) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap tp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.tp, options);
+            Bitmap bitmap1 = tp.copy(options.inPreferredConfig, true);
+            return matchTemplateImage(bitmap1, bitmap);
+        } else if (ImageProcessType_findContoursImage.equals(commend)) {
+            return findContoursImage(25, bitmap);
+        } else if (ImageProcessType_momentsImage.equals(commend)) {
+            return momentsImage(25, bitmap);
         } else {
             return bitmap;
         }
@@ -960,7 +990,7 @@ public class ImageProcessUtils {
             pts = lines.get(0, i);
             Point point = new Point(pts[0], pts[1]);
             Point point1 = new Point(pts[2], pts[3]);
-            Core.line(drawImage, point, point1, new Scalar(255, 0, 0, 0), 2, 8, 0);
+            Core.line(drawImage, point, point1, new Scalar(255, 0, 0, 120), 2, 8, 0);
         }
         Mat finalMat = new Mat();
         Mat src1 = new Mat();
@@ -968,6 +998,7 @@ public class ImageProcessUtils {
         Core.addWeighted(drawImage, 0.6, src1, 0.7, 0.0, finalMat);
         Utils.matToBitmap(finalMat, bitmap);
         finalMat.release();
+        dst.release();
         src1.release();
         src.release();
         lines.release();
@@ -994,25 +1025,179 @@ public class ImageProcessUtils {
         Mat drawImage = new Mat(src.size(), src.type());
         //转为灰度图片
         Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
-        //轮廓检测
-        Imgproc.Canny(src, dst, progress, 2 * progress, 3, false);
         //圆检测
-        Imgproc.HoughCircles(dst, dst, Imgproc.CV_HOUGH_GRADIENT, 1, 5, 2 * (progress > 0 ? progress : 3), 30, 25, 500);
+        Imgproc.HoughCircles(src, dst, Imgproc.CV_HOUGH_GRADIENT, 1, 5, 129, 45, 1, progress);
+//        Imgproc.HoughCircles(src, dst, Imgproc.CV_HOUGH_GRADIENT, 1, 5);
         double[] circles = new double[3];
         for (int i = 0; i < dst.cols(); i++) {
+            circles = dst.get(0, i);
             Point point = new Point(circles[0], circles[1]);
-            Core.circle(drawImage, point, (int) circles[2], new Scalar(255, 0, 0, 0), 2, 8, 0);
+            Core.circle(drawImage, point, (int) circles[2], new Scalar(255, 0, 0, 250), 4, 8, 0);
         }
         Mat finalMat = new Mat();
         Mat src1 = new Mat();
         Utils.bitmapToMat(bitmap, src1);
-        Core.addWeighted(drawImage, 0.6, src1, 0.7, 0.0, finalMat);
+        Core.add(src1, drawImage, finalMat);
         Utils.matToBitmap(finalMat, bitmap);
         finalMat.release();
         src1.release();
         src.release();
+        dst.release();
         lines.release();
         drawImage.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 模式匹配图像检测
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap matchTemplateImage(Bitmap tp, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        Utils.bitmapToMat(tp, dst);
+        Mat drawImage = new Mat(bitmap.getWidth() - tp.getWidth() + 1, bitmap.getHeight() - tp.getHeight() + 1, CvType.CV_32FC1);
+        //模式匹配
+        Imgproc.matchTemplate(src, dst, drawImage, Imgproc.TM_CCOEFF_NORMED);
+        //归一化处理
+        Core.normalize(drawImage, drawImage, 0.0, 1.0, Core.NORM_MINMAX, -1);
+
+        Core.MinMaxLocResult minMaxLocResult = Core.minMaxLoc(drawImage);
+
+        Point point = minMaxLocResult.maxLoc;
+        //画矩形
+        Core.rectangle(src, point, new Point(point.x + tp.getWidth(), point.y + tp.getHeight()), new Scalar(255, 0, 0, 130), 4, 8, 0);
+
+        Utils.matToBitmap(src, bitmap);
+        src.release();
+        dst.release();
+        drawImage.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 轮廓检测
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap findContoursImage(int progress, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //轮廓检测
+        Imgproc.Canny(src, dst, progress, 2 * progress, 3, true);
+
+        List<MatOfPoint> matOfPoints = new ArrayList<>();
+
+        Imgproc.findContours(dst, matOfPoints, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_GRAY2BGRA);
+
+        for (int i = 0; i < matOfPoints.size(); i++) {
+            Imgproc.drawContours(src, matOfPoints, i, new Scalar(255, 0, 0, 130), 4, 8, new Mat(), 0, new Point(0, 0));
+        }
+
+        Utils.matToBitmap(src, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 轮廓周长面积计算
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap momentsImage(int progress, Bitmap bitmap) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+        //轮廓检测
+        Imgproc.Canny(src, dst, progress, 2 * progress, 3, true);
+
+        List<MatOfPoint> matOfPoints = new ArrayList<>();
+
+        Imgproc.findContours(dst, matOfPoints, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_TC89_L1, new Point(0, 0));
+
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_GRAY2BGRA);
+
+        for (int i = 0; i < matOfPoints.size(); i++) {
+            Imgproc.drawContours(src, matOfPoints, i, new Scalar(255, 0, 0, 130), 4, 8, new Mat(), 0, new Point(0, 0));
+            Moments moments = Imgproc.moments(matOfPoints.get(i), false);
+            double m00 = moments.get_m00();
+            double m10 = moments.get_m10();
+            double m01 = moments.get_m01();
+            double x0 = m10 / m00;
+            double y0 = m01 / m00;
+            double arclength = Imgproc.arcLength(new MatOfPoint2f(matOfPoints.get(i).toArray()), false);
+            double area = Imgproc.contourArea(matOfPoints.get(i));
+            Core.putText(src, "length:" + arclength, new Point(x0, y0), Core.FONT_HERSHEY_PLAIN, 1.0, new Scalar(22, 22, 123, 130));
+        }
+        Utils.matToBitmap(src, bitmap);
+        src.release();
+        dst.release();
+        String method = new Throwable().getStackTrace()[0].getMethodName();
+        time = System.currentTimeMillis() - startTime;
+        Log.i(TAG, method + ": " + time + "");
+        return bitmap;
+    }
+
+
+    /**
+     * 人脸检测
+     *
+     * @param bitmap
+     * @return
+     */
+    public static Bitmap findFaceImage(Bitmap bitmap, CascadeClassifier cascadeClassifier) {
+        startTime = System.currentTimeMillis();
+        Mat src = new Mat();
+        Mat dst = new Mat();
+        Utils.bitmapToMat(bitmap, src);
+        //转为灰度图片
+        Imgproc.cvtColor(src, src, Imgproc.COLOR_BGRA2GRAY);
+
+        MatOfRect matOfPoints = new MatOfRect();
+
+        cascadeClassifier.detectMultiScale(src, matOfPoints, 1.1, 15, 0, new Size(40, 40), new Size());
+
+        List<Rect> rects = matOfPoints.toList();
+
+        Utils.bitmapToMat(bitmap, src);
+
+        if (rects != null && rects.size() > 0) {
+            for (int i = 0; i < rects.size(); i++) {
+                Core.rectangle(src, rects.get(i).tl(), rects.get(i).br(), new Scalar(255, 0, 0, 130), 4, 8, 0);
+            }
+        }
+
+        Utils.matToBitmap(src, bitmap);
+        src.release();
+        dst.release();
         String method = new Throwable().getStackTrace()[0].getMethodName();
         time = System.currentTimeMillis() - startTime;
         Log.i(TAG, method + ": " + time + "");
