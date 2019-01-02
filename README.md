@@ -1,7 +1,7 @@
 # Android 端opencv对于图片的基本操作
 ImageProcessType_convert2Gray = "图像灰度";
 -------
-![](https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095825.png)
+![](https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095825.png) {width = 30% height = 30%}
 ImageProcessType_invert = "单个像素取反操作";
 -------
 ![](https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095849.png)
