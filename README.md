@@ -1,5 +1,6 @@
 # Android 端opencv对于图片的基本操作
-<video id="video" controls="" preload="none" poster="https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095825.png"><source id="mp4" src="https://github.com/leexingwang/opencv/blob/master/video/device-2019-01-02-144655.mp4" type="video/mp4"></video>
+
+![](https://github.com/leexingwang/opencv/blob/master/video/ss.gif)
 
 ImageProcessType_convert2Gray = "图像灰度";
 -------
