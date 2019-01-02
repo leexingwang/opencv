@@ -1,4 +1,7 @@
 # Android 端opencv对于图片的基本操作
+
+<iframe width="560" height="315" src="https://github.com/leexingwang/opencv/blob/master/video/device-2019-01-02-144655.mp4" frameborder="0" allowfullscreen></iframe>
+
 ImageProcessType_convert2Gray = "图像灰度";
 -------
 ![](https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095825.png)
