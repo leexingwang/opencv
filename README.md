@@ -7,6 +7,7 @@ ImageProcessType_fastInvert = "快速取反操作";
 -------
 ImageProcessType_openCVInvert = "直接调用OpenCV取反操作";
 -------
+![](https://github.com/leexingwang/opencv/blob/master/pic/device-2019-01-02-095825.png)
 ImageProcessType_subtractImage = "两张图片相减操作";
 -------
 ImageProcessType_addImage = "两张图片相加操作";
